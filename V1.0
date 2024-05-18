@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPP Project Appraisal Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+        }
+        #chartContainer {
+            width: 80%;
+            margin: 0 auto;
+        }
+        #statusBar {
+            width: 100%;
+            background-color: #f4f4f4;
+            margin-top: 20px;
+        }
+        #progress {
+            width: 0%;
+            height: 30px;
+            background-color: #4caf50;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>PPP Project Appraisal Calculator</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Project</th>
+                <th>Initial Investment</th>
+                <th>Yearly Cash Flow</th>
+                <th>Discount Rate (%)</th>
+                <th>Project Life (years)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Project 1</td>
+                <td><input type="number" id="initial1" value="1000000"></td>
+                <td><input type="number" id="cashflow1" value="200000"></td>
+                <td><input type="number" id="rate1" value="5"></td>
+                <td><input type="number" id="life1" value="10"></td>
+            </tr>
+            <tr>
+                <td>Project 2</td>
+                <td><input type="number" id="initial2" value="1200000"></td>
+                <td><input type="number" id="cashflow2" value="250000"></td>
+                <td><input type="number" id="rate2" value="6"></td>
+                <td><input type="number" id="life2" value="10"></td>
+            </tr>
+            <tr>
+                <td>Project 3</td>
+                <td><input type="number" id="initial3" value="1500000"></td>
+                <td><input type="number" id="cashflow3" value="300000"></td>
+                <td><input type="number" id="rate3" value="7"></td>
+                <td><input type="number" id="life3" value="10"></td>
+            </tr>
+        </tbody>
+    </table>
+    <button onclick="calculate()">Calculate</button>
+    <div id="statusBar">
+        <div id="progress">0%</div>
+    </div>
+    <div id="results">
+        <h2>Results</h2>
+        <p id="npv1"></p>
+        <p id="bcr1"></p>
+        <p id="npv2"></p>
+        <p id="bcr2"></p>
+        <p id="npv3"></p>
+        <p id="bcr3"></p>
+    </div>
+    <div id="chartContainer">
+        <canvas id="myChart"></canvas>
+    </div>
+    <script>
+        function calculate() {
+            function updateProgressBar(percentage) {
+                const progressBar = document.getElementById('progress');
+                progressBar.style.width = percentage + '%';
+                progressBar.textContent = percentage + '%';
+            }
+
+            function calculateNPV(initialInvestment, yearlyCashFlow, discountRate, projectLife) {
+                let npv = -initialInvestment;
+                for (let i = 1; i <= projectLife; i++) {
+                    npv += yearlyCashFlow / Math.pow(1 + discountRate / 100, i);
+                }
+                return npv;
+            }
+
+            function calculateBCR(initialInvestment, yearlyCashFlow, discountRate, projectLife) {
+                let discountedBenefits = 0;
+                for (let i = 1; i <= projectLife; i++) {
+                    discountedBenefits += yearlyCashFlow / Math.pow(1 + discountRate / 100, i);
+                }
+                return discountedBenefits / initialInvestment;
+            }
+
+            const totalSteps = 6;
+            let currentStep = 0;
+
+            // Project 1
+            const initial1 = parseFloat(document.getElementById('initial1').value);
+            const cashflow1 = parseFloat(document.getElementById('cashflow1').value);
+            const rate1 = parseFloat(document.getElementById('rate1').value);
+            const life1 = parseFloat(document.getElementById('life1').value);
+            const npv1 = calculateNPV(initial1, cashflow1, rate1, life1);
+            const bcr1 = calculateBCR(initial1, cashflow1, rate1, life1);
+            currentStep++;
+            updateProgressBar((currentStep / totalSteps) * 100);
+
+            document.getElementById('npv1').textContent = `Project 1 NPV: ${npv1.toFixed(2)}`;
+            document.getElementById('bcr1').textContent = `Project 1 BCR: ${bcr1.toFixed(2)}`;
+
+            // Project 2
+            const initial2 = parseFloat(document.getElementById('initial2').value);
+            const cashflow2 = parseFloat(document.getElementById('cashflow2').value);
+            const rate2 = parseFloat(document.getElementById('rate2').value);
+            const life2 = parseFloat(document.getElementById('life2').value);
+            const npv2 = calculateNPV(initial2, cashflow2, rate2, life2);
+            const bcr2 = calculateBCR(initial2, cashflow2, rate2, life2);
+            currentStep++;
+            updateProgressBar((currentStep / totalSteps) * 100);
+
+            document.getElementById('npv2').textContent = `Project 2 NPV: ${npv2.toFixed(2)}`;
+            document.getElementById('bcr2').textContent = `Project 2 BCR: ${bcr2.toFixed(2)}`;
+
+            // Project 3
+            const initial3 = parseFloat(document.getElementById('initial3').value);
+            const cashflow3 = parseFloat(document.getElementById('cashflow3').value);
+            const rate3 = parseFloat(document.getElementById('rate3').value);
+            const life3 = parseFloat(document.getElementById('life3').value);
+            const npv3 = calculateNPV(initial3, cashflow3, rate3, life3);
+            const bcr3 = calculateBCR(initial3, cashflow3, rate3, life3);
+            currentStep++;
+            updateProgressBar((currentStep / totalSteps) * 100);
+
+            document.getElementById('npv3').textContent = `Project 3 NPV: ${npv3.toFixed(2)}`;
+            document.getElementById('bcr3').textContent = `Project 3 BCR: ${bcr3.toFixed(2)}`;
+
+            // Chart.js Bar Graph
+            const ctx = document.getElementById('myChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Project 1', 'Project 2', 'Project 3'],
+                    datasets: [
+                        {
+                            label: 'NPV',
+                            data: [npv1, npv2, npv3],
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'BCR',
+                            data: [bcr1, bcr2, bcr3],
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            currentStep++;
+            updateProgressBar((currentStep / totalSteps) * 100);
+        }
+    </script>
+</body>
+</html>
